@@ -16,6 +16,8 @@ A fast, developer-friendly command-line interface tool for interacting with Slac
 - 🎯 **Easy Token Extraction**: Automatically parse tokens from browser cURL commands
 - 🏢 **Multi-Workspace Management**: Manage multiple Slack workspaces with ease
 - 💬 **Conversation Management**: List channels, read messages, send messages
+- 🔍 **Powerful Search**: Search messages across the workspace with Slack's full query syntax
+- 👥 **User Lookup**: Find users by name and resolve display names to user IDs
 - 🎉 **Message Reactions**: Add emoji reactions to messages programmatically
 - 🚀 **Fast & Lightweight**: Built with Bun for blazing fast performance
 - 🔄 **Auto-Update**: Built-in self-update mechanism
@@ -155,6 +157,9 @@ slackcli conversations list --types=public_channel
 # List DMs
 slackcli conversations list --types=im
 
+# Paginate through conversations
+slackcli conversations list --cursor="next_cursor_value"
+
 # Read recent messages from a channel
 slackcli conversations read C1234567890
 
@@ -167,6 +172,52 @@ slackcli conversations read C1234567890 --limit=50
 # Get JSON output (includes ts and thread_ts for replies)
 slackcli conversations read C1234567890 --json
 ```
+
+### User Commands
+
+```bash
+# Find a user by name (partial, case-insensitive)
+slackcli users find "jane"
+
+# Get JSON output with user ID, username, email
+slackcli users find "jane" --json
+
+# List all users in the workspace
+slackcli users list
+
+# Paginate through users
+slackcli users list --limit=200 --cursor="next_cursor_value"
+
+# Include bot users
+slackcli users list --include-bots
+```
+
+### Search Commands
+
+```bash
+# Search messages across the workspace
+slackcli search messages --query="hello"
+
+# Search by user (use user ID from `users find`)
+slackcli search messages --query="from:<@U1234567890>"
+
+# Search in a specific channel
+slackcli search messages --query="in:#general deployment"
+
+# Search with date range
+slackcli search messages --query="after:2025-01-01 before:2025-02-01 keyword"
+
+# Sort by newest first
+slackcli search messages --query="hello" --sort=timestamp --sort-dir=desc
+
+# Paginate results
+slackcli search messages --query="hello" --count=50 --page=2
+
+# Get JSON output
+slackcli search messages --query="hello" --json
+```
+
+> **Note:** Search requires a user token (xoxp) or browser session. Bot tokens (xoxb) do not support search.
 
 ### Message Commands
 
@@ -263,6 +314,8 @@ slackcli/
 │   │   ├── auth.ts
 │   │   ├── conversations.ts
 │   │   ├── messages.ts
+│   │   ├── search.ts
+│   │   ├── users.ts
 │   │   └── update.ts
 │   ├── lib/                  # Core library
 │   │   ├── auth.ts
